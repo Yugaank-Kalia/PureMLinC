@@ -70,33 +70,44 @@ When finished, deactivate with `deactivate`. The `.venv` folder is ignored in gi
 
 ## Usage (v0.1)
 
-### Python API
+### Python API (see [examples/linear_regression.py](examples/linear_regression.py))
 
 ```python
-from ml_core.linreg import LinearRegression
 import numpy as np
+from python.ml_core import linreg_fit, standardize
 
-# Create and train a linear regression model
-model = LinearRegression()
-X = np.random.randn(100, 5)
-y = np.random.randn(100)
+rng = np.random.default_rng(0)
+X = rng.normal(size=(200, 5))
+true_w = np.array([1.0, 2.0, -1.5, 0.5, 3.0])
+bias = 0.7
+y = bias + X @ true_w + 0.1 * rng.normal(size=(200,))
 
-model.fit(X, y, num_iters=100, lr=0.01)
-predictions = model.predict(X)
+# Standardize for stable training
+X_std, X_mean, X_scale = standardize(X)
+y_std, y_mean, y_scale = standardize(y)
+
+# Train with bias term (returned as w_ext[0])
+w_ext, final_loss = linreg_fit(X_std, y_std, num_iters=3000, lr=0.01)
+
+# Predict back on the original scale
+X_ext = np.c_[np.ones(X_std.shape[0]), X_std]
+y_pred_std = X_ext @ w_ext
+y_pred = y_mean + y_scale * y_pred_std
 ```
 
-For multi-output regression, pass `Y` with shape `(n_samples, n_outputs)`; the API handles the multi-target case.
+`linreg_fit` returns `w_ext` where `w_ext[0]` is the bias and the remaining entries are feature weights. For multi-output regression, pass `Y` with shape `(n_samples, n_outputs)`; the API handles the multi-target case.
 
 ### Core C API (v0.1)
 
 Available symbols (see [csrc/include/ml.h](csrc/include/ml.h)):
 
-- `ml_dot` — Dot product
+- `ml_add_double` — Add two doubles (test function)
+- `ml_dot` — Dot product of two vectors
 - `ml_axpy` — Vector operation: Y = a*X + Y
-- `ml_matmul2d` — 2D matrix multiplication
-- `ml_mse_multi` — Multi-output MSE loss
-- `ml_linreg_mse_grad_W_multi` — Gradient of MSE w.r.t. weights
-- `ml_linreg_sgd_step_multi` — Single SGD step for multi-output regression
+- `ml_matvec` — Matrix-vector multiplication
+- `ml_mse` — Mean squared error loss
+- `ml_linreg_mse_grad_w` — Gradient of MSE w.r.t. weights
+- `ml_linreg_sgd_step` — Single SGD step for linear regression
 - `ml_linreg_train` — Full linear regression training loop
 
 ## Testing
