@@ -1,0 +1,48 @@
+import numpy as np
+from ._lib import ml_linreg_train
+
+
+def linreg_fit(X: np.ndarray, y: np.ndarray, num_iters: int, lr: float, w_init: np.ndarray | None = None) -> tuple[np.ndarray, float]:
+    """
+    Train linear regression with bias using batch GD.
+    Returns w_ext where w_ext[0] is bias, w_ext[1:] are weights.
+    """
+    X = np.asarray(X, dtype=np.float64)
+    y = np.asarray(y, dtype=np.float64).reshape(-1)
+
+    if X.ndim == 1:
+        X = X.reshape(-1, 1)
+    if X.shape[0] != y.shape[0]:
+        raise ValueError("X and y must have same number of samples")
+
+    n_rows, n_cols = X.shape
+
+    # Build extended design matrix with bias column
+    X_ext = np.empty((n_rows, n_cols + 1), dtype=np.float64)
+    X_ext[:, 0] = 1.0
+    X_ext[:, 1:] = X
+
+    # Initial weights
+    if w_init is not None:
+        w_init = np.asarray(w_init, dtype=np.float64).reshape(-1)
+        if w_init.shape[0] != n_cols + 1:
+            raise ValueError("w_init length must be n_features + 1 (for bias)")
+    else:
+        w_init = None
+
+    w_out, final_loss = ml_linreg_train(
+        X_ext,
+        y,
+        num_iters=num_iters,
+        lr=lr,
+        w_init=w_init,
+    )
+
+    return w_out, final_loss
+
+def standardize(X: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    mean = np.asarray(X.mean(axis=0), dtype=np.float64)
+    std = np.asarray(X.std(axis=0), dtype=np.float64)
+    std = np.where(std == 0.0, 1.0, std)
+    normalized = (X - mean) / std
+    return normalized, mean, std
