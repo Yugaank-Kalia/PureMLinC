@@ -2,12 +2,39 @@
 import ctypes
 import pathlib
 import numpy as np
+import sys
 from ctypes import c_double, c_int, POINTER
 
 
 _here = pathlib.Path(__file__).resolve()
-_lib_path = (_here.parent.parent.parent / "csrc" / "build" / "libml.dylib").resolve()
-_ml = ctypes.CDLL(str(_lib_path))
+
+# Try multiple locations for the library:
+# 1. First, check in the package directory (installed case)
+# 2. Then, check in the development directory
+_lib_locations = [
+    _here.parent / "libml.dylib",  # Installed in same package
+    _here.parent / "libml.so",      # Linux installed
+    _here.parent / "libml.dll",     # Windows installed
+    (_here.parent.parent.parent / "csrc" / "build" / "libml.dylib"),  # Development
+]
+
+_ml = None
+_lib_path = None
+
+for loc in _lib_locations:
+    if loc.exists():
+        _lib_path = loc.resolve()
+        try:
+            _ml = ctypes.CDLL(str(_lib_path))
+            break
+        except (OSError, TypeError):
+            continue
+
+if _ml is None:
+    raise RuntimeError(
+        f"Could not load C library. Searched: {[str(p) for p in _lib_locations]}\n"
+        "Make sure to build the C library: cd csrc && make"
+    )
 
 # Core functions
 
