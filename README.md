@@ -320,5 +320,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Links
 
-- **Homepage:** https://github.com/yugaank/PureMLinC
-- **Documentation:** https://github.com/yugaank/PureMLinC#readme
+- **Homepage:** https://github.com/yugaank-kalia/PureMLinC
+- **Documentation:** https://github.com/yugaank-kalia/PureMLinC#readme
