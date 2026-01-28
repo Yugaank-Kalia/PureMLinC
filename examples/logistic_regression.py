@@ -1,12 +1,9 @@
-import sys
 import time
 import numpy as np
 import pandas as pd
 from pathlib import Path
 
-# Add parent directory to path to import from python module
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from python.ml_core import standardize, logreg_fit, ml_matvec, train_test_split
+from ml_core import standardize, logreg_fit, ml_matvec, train_test_split
 
 
 def load_data(csv_path: str | Path) -> tuple[np.ndarray, np.ndarray]:

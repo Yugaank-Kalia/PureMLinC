@@ -1,14 +1,10 @@
-import sys
 import time
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-# Add parent directory to path to import from python module
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-from python.ml_core import linreg_fit, standardize, ml_matvec
+from ml_core import linreg_fit, standardize, ml_matvec
 
 
 def load_housing(path: Path) -> tuple[np.ndarray, np.ndarray, dict]:
