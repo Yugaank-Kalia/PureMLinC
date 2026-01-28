@@ -1,9 +1,9 @@
 """Machine Learning in C - Python bindings."""
 
-__version__ = "0.2.0"
+__version__ = "0.2.2"
 __author__ = "Yugaank"
 
-from python.ml_core._lib import (
+from ml_core._lib import (
     ml_add_double,
     ml_dot,
     ml_axpy,
@@ -12,7 +12,7 @@ from python.ml_core._lib import (
     train_test_split,
 )
 
-from python.ml_core.linreg import (
+from ml_core.linreg import (
     linreg_fit,
     ml_mse,
     ml_linreg_mse_grad_w,
@@ -20,7 +20,7 @@ from python.ml_core.linreg import (
     ml_linreg_train,
 )
 
-from python.ml_core.logreg import (
+from ml_core.logreg import (
     logreg_fit,
     ml_sigmoid,
     ml_logreg_grad_w,

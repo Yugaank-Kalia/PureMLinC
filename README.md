@@ -107,7 +107,7 @@ The library uses batch gradient descent for training. Here's how to use it:
 
 ```python
 import numpy as np
-from python.ml_core import linreg_fit, standardize
+from ml_core import linreg_fit, standardize
 
 # Generate or load your data
 rng = np.random.default_rng(0)
@@ -142,7 +142,7 @@ Binary classification with sigmoid activation:
 
 ```python
 import numpy as np
-from python.ml_core import logreg_fit, standardize
+from ml_core import logreg_fit, standardize
 
 # Binary classification data
 X = np.random.randn(500, 10)
@@ -176,7 +176,7 @@ See [examples/logistic_regression.py](examples/logistic_regression.py) for a com
 The `standardize` utility normalizes features for stable training:
 
 ```python
-from python.ml_core import standardize
+from ml_core import standardize
 
 # Standardize features
 X_std, X_mean, X_scale = standardize(X)

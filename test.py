@@ -1,5 +1,5 @@
 import numpy as np
-from python.ml_core import (
+from ml_core import (
     ml_add_double,
     ml_dot,
     ml_axpy,
@@ -10,7 +10,7 @@ from python.ml_core import (
     ml_linreg_train
 )
 
-from python.ml_core.linreg import linreg_fit
+from ml_core.linreg import linreg_fit
 
 print('Adding')
 print(ml_add_double(1.5, 2.25))
