@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PureMLinC"
+version = "0.2.0"
+description = "High-performance machine learning library with C backend - linear and logistic regression"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Yugaank", email = "your.email@example.com"}
+]
+keywords = ["machine-learning", "regression", "linear", "logistic", "c-extension", "numpy"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: C",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "numpy>=1.20.0",
+]
+
+[project.optional-dependencies]
+examples = [
+    "pandas>=1.3.0",
+]
+dev = [
+    "pytest>=6.0",
+    "black>=21.0",
+    "flake8>=3.9",
+]
+
+[project.urls]
+Homepage = "https://github.com/yugaank/machine-learning-in-c"
+Documentation = "https://github.com/yugaank/machine-learning-in-c#readme"
+Repository = "https://github.com/yugaank/machine-learning-in-c.git"
+Issues = "https://github.com/yugaank/machine-learning-in-c/issues"
+
+[tool.setuptools]
+packages = ["ml_core"]
+package-dir = {"" = "python"}
+
+[tool.setuptools.package-data]
+ml_core = ["*.dylib", "*.so", "*.dll"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311', 'py312']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

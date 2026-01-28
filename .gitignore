@@ -1,4 +1,57 @@
+# Python virtual environments
 .venv/
-build
-__pycache__
+venv/
+env/
+ENV/
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# C compiled files
 *.o
+*.dylib
+*.dll
+*.a
+
+# Build directories
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Distribution
+MANIFEST
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# PyPI
+.pypirc
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Temporary files
+*.log
+*.tmp
+.cache/
