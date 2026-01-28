@@ -2,7 +2,7 @@ CC = clang
 CFLAGS = -std=c11 -O2 -fPIC -Iinclude
 LDFLAGS = -shared
 
-SRC = src/core.c src/linreg.c
+SRC = src/core.c src/linreg.c src/logreg.c
 OBJ = $(SRC:.c=.o)
 
 LIBDIR = build

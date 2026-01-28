@@ -84,11 +84,9 @@ true_b = 1.0
 true_w = np.array([3.0])
 y = (true_b + X @ true_w + 0.1 * rng.normal(size=(n,))).astype(np.float64)
 
-w_ext, final_loss = linreg_fit(X, y, num_iters=1000, lr=0.1)
-b_hat = w_ext[0]
-w_hat = w_ext[1:]
+w_hat, final_loss = linreg_fit(X, y, num_iters=1000, lr=0.1)
 
 print("Training with bias")
-print("b_hat:", b_hat, "true_b:", true_b)
-print("w_hat:", w_hat, "true_w:", true_w)
+print("b_hat:", w_hat[0], "true_b:", true_b)
+print("w_hat:", w_hat[1:], "true_w:", true_w)
 print("final loss:", final_loss)

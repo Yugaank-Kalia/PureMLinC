@@ -39,10 +39,3 @@ def linreg_fit(X: np.ndarray, y: np.ndarray, num_iters: int, lr: float, w_init: 
     )
 
     return w_out, final_loss
-
-def standardize(X: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    mean = np.asarray(X.mean(axis=0), dtype=np.float64)
-    std = np.asarray(X.std(axis=0), dtype=np.float64)
-    std = np.where(std == 0.0, 1.0, std)
-    normalized = (X - mean) / std
-    return normalized, mean, std

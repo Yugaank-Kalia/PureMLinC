@@ -8,7 +8,7 @@ import pandas as pd
 # Add parent directory to path to import from python module
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from python.ml_core import linreg_fit, standardize
+from python.ml_core import linreg_fit, standardize, ml_matvec
 
 
 def load_housing(path: Path) -> tuple[np.ndarray, np.ndarray, dict]:
@@ -30,13 +30,23 @@ def load_housing(path: Path) -> tuple[np.ndarray, np.ndarray, dict]:
     return X_std, y_std, meta
 
 
-def pure_python_linreg_fit(X: list[list[float]], y: list[float], num_iters: int, lr: float) -> tuple[list[float], float]:
+def pure_python_linreg_fit(X: list[list[float]], y: list[float], num_iters: int, lr: float) -> tuple[list[float], float, float]:
     """Pure Python linear regression with bias using batch GD (no numpy operations)."""
     n_rows = len(X)
     n_cols = len(X[0])
     
     # Initialize weights (bias + features)
     w = [0.0] * (n_cols + 1)
+    
+    # Calculate initial loss
+    y_pred_init = []
+    for i in range(n_rows):
+        pred = w[0]
+        for j in range(n_cols):
+            pred += X[i][j] * w[j + 1]
+        y_pred_init.append(pred)
+    residuals_init = [y_pred_init[i] - y[i] for i in range(n_rows)]
+    initial_loss = sum(r * r for r in residuals_init) / n_rows
     
     for _ in range(num_iters):
         # Compute predictions: y_pred = X_ext @ w
@@ -78,7 +88,7 @@ def pure_python_linreg_fit(X: list[list[float]], y: list[float], num_iters: int,
     residuals = [y_pred[i] - y[i] for i in range(n_rows)]
     final_loss = sum(r * r for r in residuals) / n_rows
     
-    return w, final_loss
+    return w, initial_loss, final_loss
 
 
 def main() -> None:
@@ -99,19 +109,29 @@ def main() -> None:
     # Time pure Python implementation
     print("Running pure Python implementation...")
     start_time = time.perf_counter()
-    w_python, loss_python = pure_python_linreg_fit(X_list, y_list, num_iters=3000, lr=0.01)
+    w_python, init_loss_python, final_loss_python = pure_python_linreg_fit(X_list, y_list, num_iters=3000, lr=0.01)
     python_time = time.perf_counter() - start_time
     print(f"  Time: {python_time:.4f} seconds")
-    print(f"  Final loss: {loss_python:.6f}")
+    print(f"  Initial loss: {init_loss_python:.6f}")
+    print(f"  Final loss: {final_loss_python:.6f}")
+    print(f"  Loss improvement: {init_loss_python - final_loss_python:.6f} ({(1 - final_loss_python/init_loss_python)*100:.2f}% reduction)")
     print()
 
     # Time C library implementation
     print("Running C library implementation...")
+    # Calculate initial loss with zero weights
+    X_ext_for_init = np.c_[np.ones(X_std.shape[0]), X_std]
+    w_init = np.zeros(X_std.shape[1] + 1)
+    y_pred_init = ml_matvec(X_ext_for_init, w_init)
+    init_loss_c = float(((y_pred_init - y_std) ** 2).mean())
+    
     start_time = time.perf_counter()
     w_ext, final_loss = linreg_fit(X_std, y_std, num_iters=3000, lr=0.01)
     c_time = time.perf_counter() - start_time
     print(f"  Time: {c_time:.4f} seconds")
+    print(f"  Initial loss: {init_loss_c:.6f}")
     print(f"  Final loss: {final_loss:.6f}")
+    print(f"  Loss improvement: {init_loss_c - final_loss:.6f} ({(1 - final_loss/init_loss_c)*100:.2f}% reduction)")
     print()
 
     # Compute speedup
@@ -128,7 +148,7 @@ def main() -> None:
 
     # Show final results on original scale
     X_ext_np = np.c_[np.ones(X_std.shape[0]), X_std]
-    y_pred_std = X_ext_np @ w_ext
+    y_pred_std = ml_matvec(X_ext_np, w_ext)
     y_pred = meta["y_mean"] + meta["y_scale"] * y_pred_std
 
     y_raw = meta["y_mean"] + meta["y_scale"] * y_std
@@ -137,7 +157,7 @@ def main() -> None:
     print("Final model performance (C library):")
     print(f"  Unscaled MSE on dataset: {mse:.2f}")
     print(f"  Weights (bias first) on standardized features:")
-    print(f"  {w_ext}")
+    print(f"{w_ext} \n")
 
 
 if __name__ == "__main__":
